@@ -47,13 +47,13 @@ public class LibraryEventsProducer {
         });
     }
 
-    public SendResult<Integer,String> sendLibraryEvents_approach2(LibraryEvent libraryEvent) throws JsonProcessingException, ExecutionException, InterruptedException, TimeoutException {
+    public ProducerRecord<Integer,String> sendLibraryEvents_approach2(LibraryEvent libraryEvent) throws JsonProcessingException, ExecutionException, InterruptedException, TimeoutException {
         var key = libraryEvent.libraryEventId();
         var value = objectMapper.writeValueAsString(libraryEvent);
-       return  kafkaTemplate.send(topic,value).get(1, TimeUnit.SECONDS);
+       return  kafkaTemplate.send(topic,value).get(1, TimeUnit.SECONDS).getProducerRecord();
     }
 
-    public SendResult<Integer,String> sendLibraryEvents_approach3(LibraryEvent libraryEvent) throws JsonProcessingException, ExecutionException, InterruptedException {
+    public ProducerRecord<Integer,String> sendLibraryEvents_approach3(LibraryEvent libraryEvent) throws JsonProcessingException, ExecutionException, InterruptedException {
         var key = libraryEvent.libraryEventId();
         var value = objectMapper.writeValueAsString(libraryEvent);
 
@@ -61,7 +61,7 @@ public class LibraryEventsProducer {
 
         ProducerRecord<Integer,String> record = new ProducerRecord<>(topic,null,key,value,recordHeaders);
         kafkaTemplate.send(record);
-        return  kafkaTemplate.send(topic,value).get();
+        return  kafkaTemplate.send(topic,value).get().getProducerRecord();
     }
 }
 
